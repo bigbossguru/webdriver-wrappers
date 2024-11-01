@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "webdrivers"
 version = "0.1.0"
-description = ""
+description = "Custom Webdriver Wrappers"
 authors = ["Eldar Gazizov <kursus1010@gmail.com>"]
 readme = "README.md"
 packages = [{include = "webdrivers", from = "src"}]
