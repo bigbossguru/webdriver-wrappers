@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "webdrivers", from = "src"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.10,<4.0"
 selenium = "^4.26.1"
 webdriver-manager = "^4.0.2"
 
