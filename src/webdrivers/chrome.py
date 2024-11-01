@@ -14,6 +14,8 @@ class WebDriverConnector:
         incognito: bool = True,
         agent: str | None = None,
         optimization: bool = True,
+        userdata_dir: Path | None = None,
+        prefs: bool = False,
     ) -> None:
         self.driver = None
         self.options = webdriver.ChromeOptions()
@@ -32,11 +34,19 @@ class WebDriverConnector:
             self.options.add_argument("--ignore-certificate-errors")
             self.options.add_argument("--enable-unsafe-swiftshader")
             self.options.add_argument("--disable-application-cache")
-            prefs = {
-                "profile.managed_default_content_settings.images": 2,
-                "profile.managed_default_content_settings.stylesheets": 2,
-            }
-            self.options.add_experimental_option("prefs", prefs)
+
+        if prefs:
+            self.options.add_experimental_option(
+                "prefs",
+                {
+                    "profile.managed_default_content_settings.images": 2,
+                    "profile.managed_default_content_settings.stylesheets": 2,
+                    "profile.managed_default_content_settings.fonts": 2,
+                },
+            )
+
+        if userdata_dir:
+            self.options.add_argument(f"--user-data-dir={str(userdata_dir)}")
 
         user_agent = (
             agent
