@@ -17,9 +17,16 @@ class WebDriverConnector:
         agent: str | None = None,
         userdata_dir: Path | None = None,
         prefs: bool = False,
+        extra_arguments: list[str] | None = None,
+        extra_options: list[tuple] | None = None,
+        debugger_address: str | None = None
     ) -> None:
         self.driver = None
         self.options = webdriver.ChromeOptions()
+
+        if debugger_address:
+            self.options.debugger_address = debugger_address
+            return None
 
         if headless:
             self.options.add_argument("--headless")
@@ -53,12 +60,21 @@ class WebDriverConnector:
         if userdata_dir:
             self.options.add_argument(f"--user-data-dir={str(userdata_dir)}")
 
-        fake_user_agent = UserAgent()
+        fake_user_agent = UserAgent(platforms="pc", browsers="chrome")
         user_agent = agent or fake_user_agent.random
         self.options.add_argument(f"--user-agent={user_agent}")
+
         self.options.add_argument("--disable-blink-features=AutomationControlled")
         self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
         self.options.add_experimental_option("useAutomationExtension", False)
+
+        if extra_options:
+            for option in extra_options:
+                self.options.add_experimental_option(*option)
+        
+        if extra_arguments:
+            for argument in extra_arguments:
+                self.options.add_argument(argument)
 
     @staticmethod
     def _get_chrome_service() -> ChromeService:
