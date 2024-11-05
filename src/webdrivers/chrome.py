@@ -86,13 +86,19 @@ class WebDriverConnector:
         else:
             return ChromeService(ChromeDriverManager().install())
 
-    def __enter__(self) -> webdriver.Chrome:
+    def open_driver(self) -> webdriver.Chrome:
         self.driver = webdriver.Chrome(
             service=self._get_chrome_service(), options=self.options
         )
         return self.driver
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+    
+    def close_driver(self) -> None:
         if self.driver:
             self.driver.close()
             self.driver.quit()
+
+    def __enter__(self) -> webdriver.Chrome:
+        return self.open_driver()
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        return self.close_driver()
