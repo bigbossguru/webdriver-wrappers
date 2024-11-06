@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "webdrivers"
-version = "0.1.0"
+name = "webdriver-wrappers"
+version = "0.2.0"
 description = "Custom Webdriver Wrappers"
 authors = ["Eldar Gazizov <kursus1010@gmail.com>"]
 readme = "README.md"
-packages = [{include = "webdrivers", from = "src"}]
+packages = [{include = "webdriver_wrappers", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"

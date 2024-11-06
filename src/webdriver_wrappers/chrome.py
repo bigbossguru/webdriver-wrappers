@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-class WebDriverConnector:
+class ChromeWebDriverWrapper:
     def __init__(
         self,
         headless: bool = False,
@@ -19,21 +19,23 @@ class WebDriverConnector:
         prefs: bool = False,
         extra_arguments: list[str] | None = None,
         extra_options: list[tuple] | None = None,
-        debugger_address: str | None = None
+        disable_automation_control: bool = False,
+        debugger_address: str | None = None,
     ) -> None:
         self.driver = None
         self.options = webdriver.ChromeOptions()
 
         if debugger_address:
             self.options.debugger_address = debugger_address
-            return None
+            # return None
 
         if headless:
             self.options.add_argument("--headless")
+
         if incognito:
             self.options.add_argument("--incognito")
 
-        if optimization or headless:
+        if optimization:
             self.options.add_argument("--no-sandbox")
             self.options.add_argument("--disable-gpu")
             self.options.add_argument("--disable-extensions")
@@ -64,20 +66,23 @@ class WebDriverConnector:
         user_agent = agent or fake_user_agent.random
         self.options.add_argument(f"--user-agent={user_agent}")
 
-        self.options.add_argument("--disable-blink-features=AutomationControlled")
-        self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        self.options.add_experimental_option("useAutomationExtension", False)
+        if disable_automation_control:
+            self.options.add_argument("--disable-blink-features=AutomationControlled")
+            self.options.add_experimental_option(
+                "excludeSwitches", ["enable-automation"]
+            )
+            self.options.add_experimental_option("useAutomationExtension", False)
 
         if extra_options:
             for option in extra_options:
                 self.options.add_experimental_option(*option)
-        
+
         if extra_arguments:
             for argument in extra_arguments:
                 self.options.add_argument(argument)
 
     @staticmethod
-    def _get_chrome_service() -> ChromeService:
+    def _get_service() -> ChromeService:
         if platform.machine() == "aarch64":
             webdriver_dir = Path(__file__).resolve().parent / "_bin" / "chrome"
             webdriver_path = webdriver_dir / "chromedriver"
@@ -88,10 +93,10 @@ class WebDriverConnector:
 
     def open_driver(self) -> webdriver.Chrome:
         self.driver = webdriver.Chrome(
-            service=self._get_chrome_service(), options=self.options
+            service=self._get_service(), options=self.options
         )
         return self.driver
-    
+
     def close_driver(self) -> None:
         if self.driver:
             self.driver.close()

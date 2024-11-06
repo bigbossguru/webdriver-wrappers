@@ -5,13 +5,13 @@
 ### Poetry
 
 ```
-poetry add git+https://github.com/bigbossguru/webdrivers.git
+poetry add git+https://github.com/bigbossguru/webdriver-wrappers.git
 ```
 
 ### Pip
 
 ```
-pip install git+https://github.com/bigbossguru/webdrivers.git
+pip install git+https://github.com/bigbossguru/webdriver-wrappers.git
 ```
 
 ## Example
