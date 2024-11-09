@@ -15,7 +15,7 @@ class ChromeWebDriverWrapper:
         incognito: bool = False,
         optimization: bool = False,
         agent: str | None = None,
-        userdata_dir: Path | None = None,
+        userdata_dir: str | Path | None = None,
         prefs: bool = False,
         extra_arguments: list[str] | None = None,
         extra_options: list[tuple] | None = None,
@@ -60,6 +60,10 @@ class ChromeWebDriverWrapper:
             )
 
         if userdata_dir:
+            if isinstance(userdata_dir, str):
+                userdata_dir = Path(userdata_dir)
+
+            userdata_dir.mkdir(exist_ok=True)
             self.options.add_argument(f"--user-data-dir={str(userdata_dir)}")
 
         fake_user_agent = UserAgent(platforms="pc", browsers="chrome")
