@@ -163,8 +163,8 @@ cython_debug/
 
 .DS_Store
 
-src/webdrivers/_bin/chrome
-src/webdrivers/_bin/firefox
+src/webdriver_wrappers/_bin/
+
 
 *.zip
 *.tar.gz
