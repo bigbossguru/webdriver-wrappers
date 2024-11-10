@@ -163,10 +163,8 @@ cython_debug/
 
 .DS_Store
 
-src/webdrivers/_bin/chrome/gen/*
-src/webdrivers/_bin/chrome/chromedriver.debug
-src/webdrivers/_bin/chrome/LICENSE
-src/webdrivers/_bin/chrome/LICENSES.chromium.html
+src/webdrivers/_bin/chrome
+src/webdrivers/_bin/firefox
 
 *.zip
 *.tar.gz
