@@ -43,6 +43,9 @@ class ChromeWebDriverWrapper:
             self.options.add_argument("--ignore-certificate-errors")
             self.options.add_argument("--enable-unsafe-swiftshader")
             self.options.add_argument("--disable-application-cache")
+            self.options.add_argument("--disable-plugins")
+            self.options.add_argument("--disable-translate")
+
 
         if platform.machine() == "aarch64":
             self.options.add_argument("--window-size=1920,1080")
