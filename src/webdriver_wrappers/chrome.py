@@ -1,5 +1,6 @@
 import os
 import platform
+import subprocess
 from pathlib import Path
 
 from fake_useragent import UserAgent
@@ -17,12 +18,14 @@ class ChromeWebDriverWrapper:
         agent: str | None = None,
         userdata_dir: str | Path | None = None,
         prefs: bool = False,
+        disable_selenium_logs: bool = True,
         extra_arguments: list[str] | None = None,
         extra_options: list[tuple] | None = None,
         disable_automation_control: bool = False,
         debugger_address: str | None = None,
     ) -> None:
         self.driver = None
+        self.disable_log = disable_selenium_logs
         self.options = webdriver.ChromeOptions()
 
         if debugger_address:
@@ -41,11 +44,15 @@ class ChromeWebDriverWrapper:
             self.options.add_argument("--disable-extensions")
             self.options.add_argument("--disable-dev-shm-usage")
             self.options.add_argument("--ignore-certificate-errors")
-            self.options.add_argument("--enable-unsafe-swiftshader")
             self.options.add_argument("--disable-application-cache")
             self.options.add_argument("--disable-plugins")
             self.options.add_argument("--disable-translate")
-
+            self.options.add_argument("--disable-notifications"),
+            self.options.add_argument("--disable-crash-reporter"),
+            self.options.add_argument("--disable-webrtc"),
+            self.options.add_argument("--disable-blink-features=WebRTC"),
+            self.options.add_argument("--disable-software-rasterizer"),
+            self.options.add_argument("--disable-webgl"),
 
         if platform.machine() == "aarch64":
             self.options.add_argument("--window-size=1920,1080")
@@ -56,7 +63,6 @@ class ChromeWebDriverWrapper:
             self.options.add_experimental_option(
                 "prefs",
                 {
-                    "profile.managed_default_content_settings.images": 2,
                     "profile.managed_default_content_settings.stylesheets": 2,
                     "profile.managed_default_content_settings.fonts": 2,
                 },
@@ -75,9 +81,7 @@ class ChromeWebDriverWrapper:
 
         if disable_automation_control:
             self.options.add_argument("--disable-blink-features=AutomationControlled")
-            self.options.add_experimental_option(
-                "excludeSwitches", ["enable-automation"]
-            )
+            self.options.add_experimental_option("excludeSwitches", ["enable-automation"])
             self.options.add_experimental_option("useAutomationExtension", False)
 
         if extra_options:
@@ -88,20 +92,22 @@ class ChromeWebDriverWrapper:
             for argument in extra_arguments:
                 self.options.add_argument(argument)
 
-    @staticmethod
-    def _get_service() -> ChromeService:
+    def _get_service(self) -> ChromeService:
         if platform.machine() == "aarch64":
             webdriver_dir = Path(__file__).resolve().parent / "_bin" / "chrome"
             webdriver_path = webdriver_dir / "chromedriver"
-            chromedriver_path = os.getenv("CHROMEDRIVER", str(webdriver_path))
-            return ChromeService(executable_path=chromedriver_path)
+            chromedriver_path = os.environ.get("CHROMEDRIVER", str(webdriver_path))
+            service = ChromeService(executable_path=chromedriver_path)
         else:
-            return ChromeService(ChromeDriverManager().install())
+            service = ChromeService(ChromeDriverManager().install())
+
+        if self.disable_log:
+            service.creation_flags = subprocess.CREATE_NO_WINDOW
+
+        return service
 
     def open_driver(self) -> webdriver.Chrome:
-        self.driver = webdriver.Chrome(
-            service=self._get_service(), options=self.options
-        )
+        self.driver = webdriver.Chrome(service=self._get_service(), options=self.options)
         return self.driver
 
     def close_driver(self) -> None:
