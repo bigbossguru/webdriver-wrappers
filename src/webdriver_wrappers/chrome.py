@@ -33,7 +33,7 @@ class ChromeWebDriverWrapper:
             # return None
 
         if headless:
-            self.options.add_argument("--headless")
+            self.options.add_argument("--headless=new")
 
         if incognito:
             self.options.add_argument("--incognito")
@@ -47,12 +47,22 @@ class ChromeWebDriverWrapper:
             self.options.add_argument("--disable-application-cache")
             self.options.add_argument("--disable-plugins")
             self.options.add_argument("--disable-translate")
-            self.options.add_argument("--disable-notifications"),
-            self.options.add_argument("--disable-crash-reporter"),
-            self.options.add_argument("--disable-webrtc"),
-            self.options.add_argument("--disable-blink-features=WebRTC"),
-            self.options.add_argument("--disable-software-rasterizer"),
-            self.options.add_argument("--disable-webgl"),
+            self.options.add_argument("--disable-notifications")
+            self.options.add_argument("--disable-crash-reporter")
+            self.options.add_argument("--disable-webrtc")
+            self.options.add_argument("--disable-blink-features=WebRTC")
+            self.options.add_argument("--disable-software-rasterizer")
+            self.options.add_argument("--disable-webgl")
+            self.options.add_argument("--disable-background-timer-throttling")
+            self.options.add_argument("--disable-backgrounding-occluded-windows")
+            self.options.add_argument("--disable-client-side-phishing-detection")
+            self.options.add_argument("--disable-oopr-debug-crash-dump")
+            self.options.add_argument("--no-crash-upload")
+            self.options.add_argument("--disable-low-res-tiling")
+            self.options.add_argument("--disable-default-apps")
+            self.options.add_argument("--disable-dev-tools")
+            self.options.add_argument("--disable-site-isolation-trials")
+
 
         if platform.machine() == "aarch64":
             self.options.add_argument("--window-size=1920,1080")
@@ -101,7 +111,7 @@ class ChromeWebDriverWrapper:
         else:
             service = ChromeService(ChromeDriverManager().install())
 
-        if self.disable_log:
+        if self.disable_log and platform.system() == "Windows":
             service.creation_flags = subprocess.CREATE_NO_WINDOW
 
         return service
