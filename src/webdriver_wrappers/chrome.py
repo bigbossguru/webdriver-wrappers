@@ -2,11 +2,14 @@ import os
 import platform
 import subprocess
 from pathlib import Path
+from typing import Literal
 
 from fake_useragent import UserAgent
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromiumService
+from webdriver_manager.core.os_manager import ChromeType
 
 
 class ChromeWebDriverWrapper:
@@ -23,9 +26,11 @@ class ChromeWebDriverWrapper:
         extra_options: list[tuple] | None = None,
         disable_automation_control: bool = False,
         debugger_address: str | None = None,
+        webdriver_type: Literal["chrome", "chromium"] = "chrome",
     ) -> None:
         self.driver = None
         self.disable_log = disable_selenium_logs
+        self.webdriver_type = webdriver_type
         self.options = webdriver.ChromeOptions()
 
         if debugger_address:
@@ -109,7 +114,11 @@ class ChromeWebDriverWrapper:
             chromedriver_path = os.environ.get("CHROMEDRIVER", str(webdriver_path))
             service = ChromeService(executable_path=chromedriver_path)
         else:
-            service = ChromeService(ChromeDriverManager().install())
+            if self.webdriver_type == "chromium":
+                service = ChromiumService(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install())
+            else:
+                service = ChromeService(ChromeDriverManager().install())
+
 
         if self.disable_log and platform.system() == "Windows":
             service.creation_flags = subprocess.CREATE_NO_WINDOW
